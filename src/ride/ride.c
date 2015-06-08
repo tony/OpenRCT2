@@ -2261,10 +2261,6 @@ void ride_prepare_breakdown(int rideIndex, int breakdownReason)
 		}
 		if (vehicle != NULL)
 			vehicle->update_flags |= VEHICLE_UPDATE_FLAG_BROKEN_CAR;
-		vehicle = &(g_sprite_list[ride->vehicles[ride->broken_vehicle]].vehicle);
-		for (i = ride->broken_car; i > 0; i--)
-			vehicle = &(g_sprite_list[vehicle->next_vehicle_on_train].vehicle);
-		vehicle->update_flags |= VEHICLE_UPDATE_FLAG_BROKEN_CAR;
 		break;
 	case BREAKDOWN_VEHICLE_MALFUNCTION:
 		// Choose a random train
@@ -5317,7 +5313,7 @@ foundRideEntry:
 		ride->station_starts[i] = 0xFFFF;
 		ride->entrances[i] = 0xFFFF;
 		ride->exits[i] = 0xFFFF;
-		ride->var_066[i] = 255;
+		ride->train_at_station[i] = 255;
 		ride->queue_time[i] = 0;
 	}
 
@@ -5887,6 +5883,8 @@ void increment_turn_count_1_element(rct_ride* ride, uint8 type){
 	case 2:
 		turn_count = &ride->turn_count_sloped;
 		break;
+	default:
+		return;
 	}
 	uint16 value = (*turn_count & TURN_MASK_1_ELEMENT) + 1;
 	*turn_count &= ~TURN_MASK_1_ELEMENT;
@@ -5908,6 +5906,8 @@ void increment_turn_count_2_elements(rct_ride* ride, uint8 type){
 	case 2:
 		turn_count = &ride->turn_count_sloped;
 		break;
+	default:
+		return;
 	}
 	uint16 value = (*turn_count & TURN_MASK_2_ELEMENTS) + 0x20;
 	*turn_count &= ~TURN_MASK_2_ELEMENTS;
@@ -5929,6 +5929,8 @@ void increment_turn_count_3_elements(rct_ride* ride, uint8 type){
 	case 2:
 		turn_count = &ride->turn_count_sloped;
 		break;
+	default:
+		return;
 	}
 	uint16 value = (*turn_count & TURN_MASK_3_ELEMENTS) + 0x100;
 	*turn_count &= ~TURN_MASK_3_ELEMENTS;
@@ -5949,6 +5951,8 @@ void increment_turn_count_4_plus_elements(rct_ride* ride, uint8 type){
 	case 2:
 		turn_count = &ride->turn_count_sloped;
 		break;
+	default:
+		return;
 	}
 	uint16 value = (*turn_count & TURN_MASK_4_PLUS_ELEMENTS) + 0x800;
 	*turn_count &= ~TURN_MASK_4_PLUS_ELEMENTS;
@@ -5970,6 +5974,8 @@ int get_turn_count_1_element(rct_ride* ride, uint8 type) {
 	case 2:
 		turn_count = &ride->turn_count_sloped;
 		break;
+	default:
+		return 0;
 	}
 
 	return (*turn_count) & TURN_MASK_1_ELEMENT;
@@ -5987,9 +5993,11 @@ int get_turn_count_2_elements(rct_ride* ride, uint8 type) {
 	case 2:
 		turn_count = &ride->turn_count_sloped;
 		break;
+	default:
+		return 0;
 	}
 
-	return (*turn_count >> 5) & TURN_MASK_2_ELEMENTS;
+	return ((*turn_count) & TURN_MASK_2_ELEMENTS) >> 5;
 }
 
 int get_turn_count_3_elements(rct_ride* ride, uint8 type) {
@@ -6004,9 +6012,11 @@ int get_turn_count_3_elements(rct_ride* ride, uint8 type) {
 	case 2:
 		turn_count = &ride->turn_count_sloped;
 		break;
+	default:
+		return 0;
 	}
 
-	return (*turn_count >> 8) & TURN_MASK_3_ELEMENTS;
+	return ((*turn_count) & TURN_MASK_3_ELEMENTS) >> 8;
 }
 
 int get_turn_count_4_plus_elements(rct_ride* ride, uint8 type) {
@@ -6018,9 +6028,11 @@ int get_turn_count_4_plus_elements(rct_ride* ride, uint8 type) {
 	case 2:		
 		turn_count = &ride->turn_count_sloped;
 		break;
+	default:
+		return 0;
 	}
 
-	return (*turn_count >> 11) & TURN_MASK_4_PLUS_ELEMENTS;
+	return ((*turn_count) & TURN_MASK_4_PLUS_ELEMENTS) >> 11;
 }
 
 bool ride_has_spinning_tunnel(rct_ride *ride) {
@@ -6698,7 +6710,7 @@ void ride_update_max_vehicles(int rideIndex)
 			for (int i = 0; i < numCars; i++) {
 				vehicleEntry = &rideEntry->vehicles[trainLayout[i]];
 				trainLength += vehicleEntry->spacing;
-				totalFriction += vehicleEntry->friction;
+				totalFriction += vehicleEntry->car_friction;
 			}
 
 			if (trainLength <= stationLength && totalFriction <= maxFriction) {
