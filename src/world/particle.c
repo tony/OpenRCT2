@@ -15,14 +15,14 @@ void crashed_vehicle_particle_create(rct_vehicle_colour colours, int x, int y, i
 		sprite->sprite_height_negative = 8;
 		sprite->sprite_height_positive = 8;
 		sprite->sprite_identifier = SPRITE_IDENTIFIER_MISC;
-		sprite_move(x, y, z + 4, (rct_sprite*)sprite);
+		sprite_move(x, y, z, (rct_sprite*)sprite);
 		sprite->misc_identifier = SPRITE_MISC_CRASHED_VEHICLE_PARTICLE;
 
 		sprite->var_26 = (rand() & 0xFF) * 12;
 		sprite->var_24 = (rand() & 0x7F) + 140;
 		sprite->var_2E = ((rand() & 0xFF) * 5) >> 8;
-		sprite->acceleration_x = (rand() & 0xFFFF) * 4;
-		sprite->acceleration_y = (rand() & 0xFFFF) * 4;
+		sprite->acceleration_x = ((sint16)(rand() & 0xFFFF)) * 4;
+		sprite->acceleration_y = ((sint16)(rand() & 0xFFFF)) * 4;
 		sprite->acceleration_z = (rand() & 0xFFFF) * 4 + 0x10000;
 		sprite->velocity_x = 0;
 		sprite->velocity_y = 0;
