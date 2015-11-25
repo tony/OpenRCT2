@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 
 set -e
 
@@ -26,7 +26,7 @@ if [ -f $libVFile ]; then
     done < $libVFile
 fi
 
-if [ "z$currentversion" == "z$sha256sum" ]; then
+if [ "z$currentversion" -eq "z$sha256sum" ]; then
     needsdownload="false"
 fi
 
@@ -47,7 +47,7 @@ if [[ "$needsdownload" = "true" ]]; then
 	if [[ -d $cachedir/orctlibs ]]; then
 		rm -rf $cachedir/orctlibs
 	fi
-	./install.sh
+	zsh ./install.sh
 fi
 
 pushd build
