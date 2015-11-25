@@ -88,6 +88,9 @@ typedef utf16* utf16string;
 #ifdef _WIN32
 	#define OPENRCT2_PLATFORM		"Windows"
 #endif // _WIN32
+#ifdef __FreeBSD__
+	#define OPENRCT2_PLATFORM		"Linux"
+#endif
 #ifdef __linux__
 	#define OPENRCT2_PLATFORM		"Linux"
 #endif
