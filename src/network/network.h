@@ -95,6 +95,7 @@ extern "C" {
 #include <set>
 #include <memory>
 #include <vector>
+#include <string>
 #include <SDL.h>
 
 template <std::size_t size>
